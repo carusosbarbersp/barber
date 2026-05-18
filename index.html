@@ -51,6 +51,7 @@
     <nav class="nav" aria-label="Menu principal">
       <a href="#servicos">Serviços</a>
       <a href="#experiencia">Experiência</a>
+      <a href="#barbeiro">Barbeiro</a>
       <a href="#avaliacoes">Avaliações</a>
       <a href="#contato">Contato</a>
     </nav>
@@ -114,6 +115,34 @@
       </div>
     </section>
 
+
+
+    <section id="barbeiro" class="section section-barbeiro">
+      <div class="container barbeiro-grid">
+        <div class="barbeiro-photo-wrap reveal">
+          <div class="barbeiro-photo-frame">
+            <img src="assets/barbeiro.png" alt="Barbeiro responsável pela Caruso's Barbearia Tradicional" />
+          </div>
+        </div>
+
+        <div class="barbeiro-content reveal reveal-right">
+          <p class="eyebrow vintage-kicker">O barbeiro</p>
+          <h2>Tradição, técnica e atenção em cada atendimento.</h2>
+          <p>
+            Caruso é Mestre Barbeiro com mais de uma década de experiência, especialista em cortes vintage, visagismo e cuidado capilar. Reconhecido pela técnica refinada e atendimento humanizado, já formou mais de 120 alunos e acredita que cada cliente merece um serviço personalizado, pensado para fortalecer estilo, autoestima e confiança.
+          </p>
+          <p>
+            Ao lado da designer Raquel Netto, une experiência, cuidado e tradição em cada atendimento.
+          </p>
+          <a class="button button-secondary" href="https://wa.me/5519982435036?text=Ol%C3%A1%20Caruso's!%20Gostaria%20de%20conhecer%20melhor%20os%20servi%C3%A7os%20da%20barbearia." target="_blank" rel="noopener">
+            <svg class="button-icon" aria-hidden="true"><use href="#icon-whatsapp"></use></svg>
+            Falar com a Caruso's
+          </a>
+        </div>
+      </div>
+    </section>
+
+
     <section id="servicos" class="section section-light services-section">
       <div class="container">
         <div class="section-heading reveal">
@@ -122,13 +151,13 @@
           <p>Serviços objetivos, bem feitos e com agendamento simples pelo WhatsApp.</p>
         </div>
 
-        <div class="services-carousel reveal" data-autoplay="4500" aria-label="Carrossel de serviços da Caruso's Barbearia">
-          <button class="carousel-arrow carousel-arrow-left" type="button" aria-label="Serviço anterior">
+        <div class="services-carousel reveal" data-services-carousel aria-label="Carrossel de serviços da Caruso's Barbearia">
+          <button class="carousel-arrow carousel-arrow-left" type="button" data-services-prev aria-label="Serviço anterior">
             <span aria-hidden="true">‹</span>
           </button>
 
           <div class="services-viewport">
-            <div class="services-track">
+            <div class="services-track" data-services-track>
               <article class="card service-card service-slide has-bg" style="--service-bg: url('assets/corte-masculino.png');">
                 <span class="icon">✂</span>
                 <h3>Corte masculino</h3>
@@ -195,12 +224,12 @@
             </div>
           </div>
 
-          <button class="carousel-arrow carousel-arrow-right" type="button" aria-label="Próximo serviço">
+          <button class="carousel-arrow carousel-arrow-right" type="button" data-services-next aria-label="Próximo serviço">
             <span aria-hidden="true">›</span>
           </button>
         </div>
 
-        <div class="carousel-dots" aria-label="Indicadores do carrossel de serviços"></div>
+        <div class="carousel-dots" data-services-dots aria-label="Indicadores do carrossel de serviços"></div>
 
         <div class="services-disclaimer reveal">
           <strong>Formas de pagamento</strong>
@@ -246,7 +275,6 @@
         </div>
       </div>
     </section>
-
     <section class="section section-showcase">
       <div class="container showcase-grid">
         <div class="showcase-card reveal">
@@ -279,7 +307,11 @@
           <p>Alguns exemplos do que os clientes mais valorizam no atendimento.</p>
         </div>
 
-        <div class="cards three-columns stagger">
+        <div class="services-carousel" data-services-carousel>
+          <button class="services-arrow services-arrow-prev" type="button" data-services-prev aria-label="Serviços anteriores">‹</button>
+          <div class="services-viewport">
+            <div class="services-track" data-services-track>
+
           <article class="card testimonial reveal">
             <p>"Atendimento de primeira, muito atencioso e profissional. Sempre entende exatamente o que eu quero."</p>
             <strong>Ayslan Gonçalves</strong>
@@ -294,7 +326,12 @@
             <p>"Top! Recomendo o atendimento e a qualidade do serviço."</p>
             <strong>Daniel Carvalho</strong>
           </article>
-        </div>
+        
+            </div>
+          </div>
+          <button class="services-arrow services-arrow-next" type="button" data-services-next aria-label="Próximos serviços">›</button>
+          <div class="services-dots" data-services-dots aria-label="Indicadores do carrossel"></div>
+        </div></div>
       </div>
     </section>
 

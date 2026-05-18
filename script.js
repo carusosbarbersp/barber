@@ -1,7 +1,4 @@
 // Animações modernas no scroll
-// Este arquivo observa os elementos com a classe .reveal
-// e adiciona a classe .is-visible quando eles entram na tela.
-
 const revealElements = document.querySelectorAll(".reveal");
 const header = document.querySelector(".site-header");
 
@@ -20,127 +17,114 @@ const revealObserver = new IntersectionObserver(
   }
 );
 
-revealElements.forEach((element) => {
-  revealObserver.observe(element);
-});
+revealElements.forEach((element) => revealObserver.observe(element));
 
 function updateHeader() {
-  if (window.scrollY > 24) {
-    header.classList.add("is-scrolled");
-  } else {
-    header.classList.remove("is-scrolled");
-  }
+  if (!header) return;
+  header.classList.toggle("is-scrolled", window.scrollY > 24);
 }
 
 updateHeader();
 window.addEventListener("scroll", updateHeader);
 
-// Carrossel premium de serviços
-const servicesCarousel = document.querySelector(".services-carousel");
+// Carrosséis 100% manuais.
+// Corrige as setas da seção Serviços e também mantém compatibilidade
+// com outros carrosséis que usem classes/data-attributes parecidos.
+function initManualCarousels() {
+  const carousels = document.querySelectorAll("[data-services-carousel], .services-carousel");
 
-if (servicesCarousel) {
-  const track = servicesCarousel.querySelector(".services-track");
-  const slides = Array.from(servicesCarousel.querySelectorAll(".service-slide"));
-  const prevButton = servicesCarousel.querySelector(".carousel-arrow-left");
-  const nextButton = servicesCarousel.querySelector(".carousel-arrow-right");
-  const dotsContainer = document.querySelector(".carousel-dots");
-  const autoplayDelay = Number(servicesCarousel.dataset.autoplay || 4500);
+  carousels.forEach((carousel) => {
+    const track = carousel.querySelector("[data-services-track], .services-track");
+    if (!track || carousel.dataset.carouselReady === "true") return;
 
-  let currentIndex = 0;
-  let autoplayId;
+    const prevButton = carousel.querySelector(
+      "[data-services-prev], .carousel-arrow-left, .services-arrow-prev, .carousel-btn.prev"
+    );
 
-  function slidesPerView() {
-    if (window.innerWidth <= 640) return 1;
-    if (window.innerWidth <= 960) return 2;
-    return 3;
-  }
+    const nextButton = carousel.querySelector(
+      "[data-services-next], .carousel-arrow-right, .services-arrow-next, .carousel-btn.next"
+    );
 
-  function maxIndex() {
-    return Math.max(0, slides.length - slidesPerView());
-  }
+    const dotsContainer =
+      carousel.querySelector("[data-services-dots], .carousel-dots, .services-dots") || null;
 
-  function createDots() {
-    if (!dotsContainer) return;
-    dotsContainer.innerHTML = "";
-    for (let index = 0; index <= maxIndex(); index++) {
-      const dot = document.createElement("button");
-      dot.className = "carousel-dot";
-      dot.type = "button";
-      dot.setAttribute("aria-label", `Ir para grupo de serviços ${index + 1}`);
-      dot.addEventListener("click", () => {
-        goTo(index);
-        restartAutoplay();
-      });
-      dotsContainer.appendChild(dot);
+    const slides = Array.from(track.children).filter((item) => item.matches("article, .service-card, .testimonial"));
+    if (!slides.length) return;
+
+    carousel.dataset.carouselReady = "true";
+    let currentIndex = 0;
+
+    function visibleSlides() {
+      if (window.innerWidth <= 720) return 1;
+      if (window.innerWidth <= 1100) return 2;
+      return 3;
     }
-  }
 
-  function updateDots() {
-    if (!dotsContainer) return;
-    const dots = Array.from(dotsContainer.querySelectorAll(".carousel-dot"));
-    dots.forEach((dot, index) => {
-      dot.classList.toggle("is-active", index === currentIndex);
+    function maxIndex() {
+      return Math.max(0, slides.length - visibleSlides());
+    }
+
+    function slideStep() {
+      const firstSlide = slides[0];
+      const rect = firstSlide.getBoundingClientRect();
+      const styles = window.getComputedStyle(track);
+      const gap = parseFloat(styles.columnGap || styles.gap || "0") || 0;
+      return rect.width + gap;
+    }
+
+    function buildDots() {
+      if (!dotsContainer) return;
+
+      dotsContainer.innerHTML = "";
+      const count = maxIndex() + 1;
+
+      for (let i = 0; i < count; i += 1) {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = dotsContainer.classList.contains("carousel-dots") ? "carousel-dot" : "services-dot";
+        dot.setAttribute("aria-label", `Ir para o item ${i + 1}`);
+        dot.addEventListener("click", () => {
+          currentIndex = i;
+          updateCarousel();
+        });
+        dotsContainer.appendChild(dot);
+      }
+    }
+
+    function updateCarousel() {
+      currentIndex = Math.max(0, Math.min(currentIndex, maxIndex()));
+      track.style.transform = `translate3d(-${currentIndex * slideStep()}px, 0, 0)`;
+
+      if (prevButton) prevButton.disabled = currentIndex === 0;
+      if (nextButton) nextButton.disabled = currentIndex === maxIndex();
+
+      if (dotsContainer) {
+        Array.from(dotsContainer.children).forEach((dot, index) => {
+          dot.classList.toggle("is-active", index === currentIndex);
+        });
+      }
+    }
+
+    prevButton?.addEventListener("click", (event) => {
+      event.preventDefault();
+      currentIndex -= 1;
+      updateCarousel();
     });
-  }
 
-  function updateCarousel() {
-    currentIndex = Math.min(currentIndex, maxIndex());
-    const slide = slides[0];
-    const gap = Number.parseFloat(getComputedStyle(track).gap) || 0;
-    const movement = (slide.offsetWidth + gap) * currentIndex;
-    track.style.transform = `translateX(-${movement}px)`;
-    updateDots();
-  }
+    nextButton?.addEventListener("click", (event) => {
+      event.preventDefault();
+      currentIndex += 1;
+      updateCarousel();
+    });
 
-  function goTo(index) {
-    currentIndex = Math.max(0, Math.min(index, maxIndex()));
-    updateCarousel();
-  }
+    window.addEventListener("resize", () => {
+      buildDots();
+      updateCarousel();
+    });
 
-  function nextSlide() {
-    currentIndex = currentIndex >= maxIndex() ? 0 : currentIndex + 1;
-    updateCarousel();
-  }
-
-  function prevSlide() {
-    currentIndex = currentIndex <= 0 ? maxIndex() : currentIndex - 1;
-    updateCarousel();
-  }
-
-  function startAutoplay() {
-    autoplayId = window.setInterval(nextSlide, autoplayDelay);
-  }
-
-  function stopAutoplay() {
-    window.clearInterval(autoplayId);
-  }
-
-  function restartAutoplay() {
-    stopAutoplay();
-    startAutoplay();
-  }
-
-  prevButton?.addEventListener("click", () => {
-    prevSlide();
-    restartAutoplay();
-  });
-
-  nextButton?.addEventListener("click", () => {
-    nextSlide();
-    restartAutoplay();
-  });
-
-  servicesCarousel.addEventListener("mouseenter", stopAutoplay);
-  servicesCarousel.addEventListener("mouseleave", startAutoplay);
-  servicesCarousel.addEventListener("focusin", stopAutoplay);
-  servicesCarousel.addEventListener("focusout", startAutoplay);
-
-  window.addEventListener("resize", () => {
-    createDots();
+    buildDots();
     updateCarousel();
   });
-
-  createDots();
-  updateCarousel();
-  startAutoplay();
 }
+
+initManualCarousels();
